@@ -58,7 +58,7 @@
     article: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>'
   };
 
-  /* ---------- 渲染平台入口（公众号 / 人人都是产品经理） ---------- */
+  /* ---------- 渲染平台入口（公众号 / 小红书） ---------- */
   function renderPlatforms() {
     const wrap = $("#platformsList");
     if (!wrap) return;
