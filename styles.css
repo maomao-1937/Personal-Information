@@ -425,6 +425,10 @@ ul { list-style: none; }
   border-color: rgba(88, 101, 242, 0.45);
   box-shadow: 0 26px 48px -28px rgba(88, 101, 242, 0.45);
 }
+.card--link:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
 
 .card__tag {
   align-self: flex-start;

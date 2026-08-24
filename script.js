@@ -26,15 +26,23 @@
   function renderProjects() {
     const wrap = $("#projectsList");
     if (!wrap) return;
-    wrap.innerHTML = (S.projects || []).map((p) => `
-      <article class="card reveal">
-        <span class="card__tag">${p.tag || "项目"}</span>
-        <h3 class="card__title">${p.title || "未命名"}</h3>
-        <p class="card__desc">${p.description || ""}</p>
-        <div class="card__stack">${(p.stack || []).map((s) => `<span>${s}</span>`).join("")}</div>
-        <span class="card__arrow" aria-hidden="true">↗</span>
-      </article>
-    `).join("");
+    wrap.innerHTML = (S.projects || []).map((p) => {
+      const tag = p.url ? "a" : "article";
+      const linkClass = p.url ? " card--link" : "";
+      const linkAttrs = p.url
+        ? ` href="${p.url}" target="_blank" rel="noopener noreferrer"`
+        : "";
+
+      return `
+        <${tag} class="card${linkClass} reveal"${linkAttrs}>
+          <span class="card__tag">${p.tag || "项目"}</span>
+          <h3 class="card__title">${p.title || "未命名"}</h3>
+          <p class="card__desc">${p.description || ""}</p>
+          <div class="card__stack">${(p.stack || []).map((s) => `<span>${s}</span>`).join("")}</div>
+          <span class="card__arrow" aria-hidden="true">↗</span>
+        </${tag}>
+      `;
+    }).join("");
   }
 
   /* ---------- 渲染「我在做什么」 ---------- */
