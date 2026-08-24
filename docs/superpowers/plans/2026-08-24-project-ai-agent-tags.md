@@ -2,7 +2,7 @@
 
 > **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
 
-**目标：** 为 7 张精选项目卡片展示 3～5 个来自指定 Agent 能力词表的标签，并移除普通技术栈标签。
+**目标：** 为 7 张精选项目卡片展示 3～6 个来自指定 Agent 能力词表的可读标签，并移除普通技术栈标签和标签中的下划线。
 
 **架构：** 保留 `window.SITE.projects[].stack` 数据接口和现有 `.card__stack` 渲染／样式，只在项目配置中补齐经过仓库证据核对的标签。扩展 Node.js 回归测试，精确约束每个项目的标签映射、数量和词表范围，再用浏览器验证桌面端与移动端布局以及现有外链行为。
 
@@ -29,32 +29,33 @@
 
 ```js
 const allowedAgentTags = new Set([
-  "_agent_loop",
-  "_tool_use",
-  "_permission",
-  "_hooks",
-  "_todo_write",
-  "_skill_loading",
-  "_context_compact",
-  "_memory",
-  "_task_system",
-  "_background_tasks",
-  "_cron_scheduler",
-  "_agent_teams",
-  "_mcp_plugin",
-  "_integrated_harness",
-  "_workflow_runtime",
-  "_goal_loop"
+  "agent loop",
+  "tool use",
+  "permission",
+  "hooks",
+  "todo write",
+  "subagent",
+  "skill loading",
+  "context compact",
+  "memory",
+  "task system",
+  "background tasks",
+  "cron scheduler",
+  "agent teams",
+  "mcp plugin",
+  "integrated harness",
+  "workflow runtime",
+  "goal loop"
 ]);
 
 const expectedAgentTags = new Map([
-  ["爱支招", ["_agent_loop", "_memory", "_workflow_runtime"]],
-  ["AI Conversation Quality Inspector", ["_permission", "_skill_loading", "_task_system", "_workflow_runtime"]],
-  ["ExplainBack", ["_agent_loop", "_skill_loading", "_memory", "_goal_loop"]],
-  ["Learning Supervision and Planning Assistant", ["_todo_write", "_skill_loading", "_memory", "_task_system", "_goal_loop"]],
-  ["MeetingMemo", ["_permission", "_skill_loading", "_background_tasks", "_workflow_runtime"]],
-  ["ShipCheck", ["_agent_loop", "_tool_use", "_permission", "_background_tasks", "_workflow_runtime"]],
-  ["灵感星图", ["_skill_loading", "_memory", "_workflow_runtime"]]
+  ["爱支招", ["agent loop", "memory", "workflow runtime"]],
+  ["AI Conversation Quality Inspector", ["permission", "skill loading", "task system", "workflow runtime"]],
+  ["ExplainBack", ["agent loop", "skill loading", "memory", "goal loop"]],
+  ["Learning Supervision and Planning Assistant", ["todo write", "skill loading", "memory", "task system", "goal loop"]],
+  ["MeetingMemo", ["permission", "skill loading", "background tasks", "workflow runtime"]],
+  ["ShipCheck", ["agent loop", "tool use", "permission", "background tasks", "workflow runtime", "subagent"]],
+  ["灵感星图", ["skill loading", "memory", "workflow runtime"]]
 ]);
 ```
 
@@ -68,8 +69,11 @@ test("每个精选项目只展示经过核对的 AI Agent 标签", () => {
 
   site.projects.forEach(({ title, stack }) => {
     assert.deepEqual(Array.from(stack), expectedAgentTags.get(title));
-    assert.ok(stack.length >= 3 && stack.length <= 5, `${title} 应展示 3～5 个标签`);
-    stack.forEach((tag) => assert.ok(allowedAgentTags.has(tag), `${title} 包含词表外标签 ${tag}`));
+    assert.ok(stack.length >= 3 && stack.length <= 6, `${title} 应展示 3～6 个标签`);
+    stack.forEach((tag) => {
+      assert.ok(allowedAgentTags.has(tag), `${title} 包含词表外标签 ${tag}`);
+      assert.match(tag, /^[a-z]+(?: [a-z]+)*$/, `${title} 标签不应包含下划线`);
+    });
   });
 
   const markup = renderProjects(site);
@@ -106,31 +110,31 @@ git commit -m "test: 锁定项目 Agent 标签映射"
 将 7 个项目的 `stack` 配置分别写为：
 
 ```js
-stack: ["_agent_loop", "_memory", "_workflow_runtime"]
+stack: ["agent loop", "memory", "workflow runtime"]
 ```
 
 ```js
-stack: ["_permission", "_skill_loading", "_task_system", "_workflow_runtime"]
+stack: ["permission", "skill loading", "task system", "workflow runtime"]
 ```
 
 ```js
-stack: ["_agent_loop", "_skill_loading", "_memory", "_goal_loop"]
+stack: ["agent loop", "skill loading", "memory", "goal loop"]
 ```
 
 ```js
-stack: ["_todo_write", "_skill_loading", "_memory", "_task_system", "_goal_loop"]
+stack: ["todo write", "skill loading", "memory", "task system", "goal loop"]
 ```
 
 ```js
-stack: ["_permission", "_skill_loading", "_background_tasks", "_workflow_runtime"]
+stack: ["permission", "skill loading", "background tasks", "workflow runtime"]
 ```
 
 ```js
-stack: ["_agent_loop", "_tool_use", "_permission", "_background_tasks", "_workflow_runtime"]
+stack: ["agent loop", "tool use", "permission", "background tasks", "workflow runtime", "subagent"]
 ```
 
 ```js
-stack: ["_skill_loading", "_memory", "_workflow_runtime"]
+stack: ["skill loading", "memory", "workflow runtime"]
 ```
 
 这些数组按 `爱支招`、`AI Conversation Quality Inspector`、`ExplainBack`、`Learning Supervision and Planning Assistant`、`MeetingMemo`、`ShipCheck`、`灵感星图` 的现有顺序写入。除 `stack` 外不修改标题、描述、链接和排序。
@@ -179,7 +183,7 @@ python3 -m http.server 4173
 ```js
 await expect(page.locator("#projectsList .card")).toHaveCount(7);
 await expect(page.locator("#projectsList .card__stack")).toHaveCount(7);
-await expect(page.locator("#projectsList .card__stack span")).toHaveCount(28);
+await expect(page.locator("#projectsList .card__stack span")).toHaveCount(29);
 await expect(page.locator("#projectsList .card__arrow")).toHaveCount(6);
 await expect(page.locator('#projectsList a[target="_blank"][rel="noopener noreferrer"]')).toHaveCount(6);
 ```
@@ -192,7 +196,7 @@ await expect(page.locator('#projectsList a[target="_blank"][rel="noopener norefe
 
 - 项目卡片保持单列；
 - 每张卡片的标签在卡片内部自动换行；
-- 28 个标签全部可见且没有水平溢出；
+- 29 个标签全部可见且没有水平溢出；
 - 6 个「去查看 →」仍位于各自链接卡片内。
 
 - [ ] **步骤 3：执行最终验证**
