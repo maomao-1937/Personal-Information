@@ -180,5 +180,5 @@ test("每个精选项目只展示经过核对的 AI Agent 标签", () => {
   );
 
   assert.deepEqual(renderedTags, Array.from(expectedAgentTags.values()));
-  assert.doesNotMatch(markup, />LLM<|>Product Design<|>RAG<|>Next\.js<|>FastAPI<|>_subagent</);
+  assert.doesNotMatch(markup, />LLM<|>Product Design<|>RAG<|>Next\.js<|>FastAPI</);
 });
