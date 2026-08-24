@@ -113,12 +113,20 @@ test("精选项目配置保留爱支招并准确加入六个项目", () => {
 
 test("六个 GitHub 项目渲染为安全的整卡外链", () => {
   const markup = renderProjects(loadSiteConfig());
+  const linkedCards = Array.from(
+    markup.matchAll(/<a class="card card--link reveal"[\s\S]*?<\/a>/g),
+    (match) => match[0]
+  );
+  const unlinkedCard = markup.match(/<article class="card reveal"[\s\S]*?<\/article>/)?.[0];
 
-  assert.equal((markup.match(/<a class="card card--link reveal"/g) || []).length, 6);
+  assert.equal(linkedCards.length, 6);
   assert.equal((markup.match(/<article class="card reveal"/g) || []).length, 1);
   assert.equal((markup.match(/target="_blank" rel="noopener noreferrer"/g) || []).length, 6);
   assert.equal((markup.match(/<span class="card__arrow">去查看 <span aria-hidden="true">→<\/span><\/span>/g) || []).length, 6);
   assert.doesNotMatch(markup, /↗/);
+  linkedCards.forEach((card) => assert.match(card, /<span class="card__arrow">去查看/));
+  assert.ok(unlinkedCard);
+  assert.doesNotMatch(unlinkedCard, /card__arrow|去查看/);
   expectedProjects.forEach(([, , url]) => assert.match(markup, new RegExp(`href="${url}"`)));
 });
 
