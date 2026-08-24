@@ -40,32 +40,33 @@ const expectedProjects = [
 ];
 
 const allowedAgentTags = new Set([
-  "_agent_loop",
-  "_tool_use",
-  "_permission",
-  "_hooks",
-  "_todo_write",
-  "_skill_loading",
-  "_context_compact",
-  "_memory",
-  "_task_system",
-  "_background_tasks",
-  "_cron_scheduler",
-  "_agent_teams",
-  "_mcp_plugin",
-  "_integrated_harness",
-  "_workflow_runtime",
-  "_goal_loop"
+  "agent loop",
+  "tool use",
+  "permission",
+  "hooks",
+  "todo write",
+  "subagent",
+  "skill loading",
+  "context compact",
+  "memory",
+  "task system",
+  "background tasks",
+  "cron scheduler",
+  "agent teams",
+  "mcp plugin",
+  "integrated harness",
+  "workflow runtime",
+  "goal loop"
 ]);
 
 const expectedAgentTags = new Map([
-  ["爱支招", ["_agent_loop", "_memory", "_workflow_runtime"]],
-  ["AI Conversation Quality Inspector", ["_permission", "_skill_loading", "_task_system", "_workflow_runtime"]],
-  ["ExplainBack", ["_agent_loop", "_skill_loading", "_memory", "_goal_loop"]],
-  ["Learning Supervision and Planning Assistant", ["_todo_write", "_skill_loading", "_memory", "_task_system", "_goal_loop"]],
-  ["MeetingMemo", ["_permission", "_skill_loading", "_background_tasks", "_workflow_runtime"]],
-  ["ShipCheck", ["_agent_loop", "_tool_use", "_permission", "_background_tasks", "_workflow_runtime"]],
-  ["灵感星图", ["_skill_loading", "_memory", "_workflow_runtime"]]
+  ["爱支招", ["agent loop", "memory", "workflow runtime"]],
+  ["AI Conversation Quality Inspector", ["permission", "skill loading", "task system", "workflow runtime"]],
+  ["ExplainBack", ["agent loop", "skill loading", "memory", "goal loop"]],
+  ["Learning Supervision and Planning Assistant", ["todo write", "skill loading", "memory", "task system", "goal loop"]],
+  ["MeetingMemo", ["permission", "skill loading", "background tasks", "workflow runtime"]],
+  ["ShipCheck", ["agent loop", "tool use", "permission", "background tasks", "workflow runtime", "subagent"]],
+  ["灵感星图", ["skill loading", "memory", "workflow runtime"]]
 ]);
 
 function loadSiteConfig() {
@@ -169,8 +170,11 @@ test("每个精选项目只展示经过核对的 AI Agent 标签", () => {
 
   site.projects.forEach(({ title, stack }) => {
     assert.deepEqual(Array.from(stack), expectedAgentTags.get(title));
-    assert.ok(stack.length >= 3 && stack.length <= 5, `${title} 应展示 3～5 个标签`);
-    stack.forEach((tag) => assert.ok(allowedAgentTags.has(tag), `${title} 包含词表外标签 ${tag}`));
+    assert.ok(stack.length >= 3 && stack.length <= 6, `${title} 应展示 3～6 个标签`);
+    stack.forEach((tag) => {
+      assert.ok(allowedAgentTags.has(tag), `${title} 包含词表外标签 ${tag}`);
+      assert.match(tag, /^[a-z]+(?: [a-z]+)*$/, `${title} 标签不应包含下划线`);
+    });
   });
 
   const markup = renderProjects(site);
