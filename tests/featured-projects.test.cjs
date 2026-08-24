@@ -39,6 +39,35 @@ const expectedProjects = [
   ]
 ];
 
+const allowedAgentTags = new Set([
+  "_agent_loop",
+  "_tool_use",
+  "_permission",
+  "_hooks",
+  "_todo_write",
+  "_skill_loading",
+  "_context_compact",
+  "_memory",
+  "_task_system",
+  "_background_tasks",
+  "_cron_scheduler",
+  "_agent_teams",
+  "_mcp_plugin",
+  "_integrated_harness",
+  "_workflow_runtime",
+  "_goal_loop"
+]);
+
+const expectedAgentTags = new Map([
+  ["爱支招", ["_agent_loop", "_memory", "_workflow_runtime"]],
+  ["AI Conversation Quality Inspector", ["_permission", "_skill_loading", "_task_system", "_workflow_runtime"]],
+  ["ExplainBack", ["_agent_loop", "_skill_loading", "_memory", "_goal_loop"]],
+  ["Learning Supervision and Planning Assistant", ["_todo_write", "_skill_loading", "_memory", "_task_system", "_goal_loop"]],
+  ["MeetingMemo", ["_permission", "_skill_loading", "_background_tasks", "_workflow_runtime"]],
+  ["ShipCheck", ["_agent_loop", "_tool_use", "_permission", "_background_tasks", "_workflow_runtime"]],
+  ["灵感星图", ["_skill_loading", "_memory", "_workflow_runtime"]]
+]);
+
 function loadSiteConfig() {
   const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
   const scripts = Array.from(html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g));
@@ -133,4 +162,23 @@ test("六个 GitHub 项目渲染为安全的整卡外链", () => {
 test("链接卡片提供可见的键盘焦点", () => {
   const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
   assert.match(styles, /\.card--link:focus-visible/);
+});
+
+test("每个精选项目只展示经过核对的 AI Agent 标签", () => {
+  const site = loadSiteConfig();
+
+  site.projects.forEach(({ title, stack }) => {
+    assert.deepEqual(Array.from(stack), expectedAgentTags.get(title));
+    assert.ok(stack.length >= 3 && stack.length <= 5, `${title} 应展示 3～5 个标签`);
+    stack.forEach((tag) => assert.ok(allowedAgentTags.has(tag), `${title} 包含词表外标签 ${tag}`));
+  });
+
+  const markup = renderProjects(site);
+  const renderedTags = Array.from(
+    markup.matchAll(/<div class="card__stack">([\s\S]*?)<\/div>/g),
+    (match) => Array.from(match[1].matchAll(/<span>([^<]+)<\/span>/g), (tag) => tag[1])
+  );
+
+  assert.deepEqual(renderedTags, Array.from(expectedAgentTags.values()));
+  assert.doesNotMatch(markup, />LLM<|>Product Design<|>RAG<|>Next\.js<|>FastAPI<|>_subagent</);
 });
