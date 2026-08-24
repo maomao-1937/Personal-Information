@@ -117,6 +117,8 @@ test("六个 GitHub 项目渲染为安全的整卡外链", () => {
   assert.equal((markup.match(/<a class="card card--link reveal"/g) || []).length, 6);
   assert.equal((markup.match(/<article class="card reveal"/g) || []).length, 1);
   assert.equal((markup.match(/target="_blank" rel="noopener noreferrer"/g) || []).length, 6);
+  assert.equal((markup.match(/<span class="card__arrow">去查看 <span aria-hidden="true">→<\/span><\/span>/g) || []).length, 6);
+  assert.doesNotMatch(markup, /↗/);
   expectedProjects.forEach(([, , url]) => assert.match(markup, new RegExp(`href="${url}"`)));
 });
 

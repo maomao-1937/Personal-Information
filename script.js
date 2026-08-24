@@ -32,6 +32,9 @@
       const linkAttrs = p.url
         ? ` href="${p.url}" target="_blank" rel="noopener noreferrer"`
         : "";
+      const action = p.url
+        ? '<span class="card__arrow">去查看 <span aria-hidden="true">→</span></span>'
+        : "";
 
       return `
         <${tag} class="card${linkClass} reveal"${linkAttrs}>
@@ -39,7 +42,7 @@
           <h3 class="card__title">${p.title || "未命名"}</h3>
           <p class="card__desc">${p.description || ""}</p>
           <div class="card__stack">${(p.stack || []).map((s) => `<span>${s}</span>`).join("")}</div>
-          <span class="card__arrow" aria-hidden="true">↗</span>
+          ${action}
         </${tag}>
       `;
     }).join("");
