@@ -17,7 +17,7 @@
 这是我的个人主页，一个纯静态、无需构建工具的网站。深色与浅色结合的卡片式设计，blurple 紫色调，包含：
 
 - **关于我** —— 个人定位与产品理念
-- **精选项目** —— 爱支招、ExplainBack
+- **精选项目** —— 爱支招、AI Conversation Quality Inspector、ExplainBack、Learning Supervision and Planning Assistant、MeetingMemo、ShipCheck、灵感星图
 - **文章与思考** —— 公众号、小红书的文章入口
 - **联系** —— 邮箱
 
@@ -44,7 +44,7 @@ window.SITE = {
   nameEn: "Chang Liu",
   title: "AI Product Manager",
   email: "lc15716951535@gmail.com",
-  projects: [...],   // 精选项目
+  projects: [...],   // 精选项目（可设置 GitHub URL）
   platforms: [...],  // 公众号 / 小红书
   articles: [...]    // 文章列表
 };
