@@ -1,6 +1,6 @@
 # 精选项目 AI Agent 标签实现计划
 
-> **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
+> **面向 AI 代理的工作者：** 必需子技能：使用 superpowers:executing-plans 逐任务实现此计划。步骤使用复选框（`- [ ]`）语法来跟踪进度。
 
 **目标：** 为 7 张精选项目卡片展示 3～5 个来自指定 Agent 能力词表的标签，并移除普通技术栈标签。
 
@@ -34,7 +34,6 @@ const allowedAgentTags = new Set([
   "_permission",
   "_hooks",
   "_todo_write",
-  "_subagent",
   "_skill_loading",
   "_context_compact",
   "_memory",
@@ -50,10 +49,10 @@ const allowedAgentTags = new Set([
 
 const expectedAgentTags = new Map([
   ["爱支招", ["_agent_loop", "_memory", "_workflow_runtime"]],
-  ["AI Conversation Quality Inspector", ["_permission", "_subagent", "_skill_loading", "_task_system", "_workflow_runtime"]],
-  ["ExplainBack", ["_agent_loop", "_subagent", "_skill_loading", "_memory", "_goal_loop"]],
+  ["AI Conversation Quality Inspector", ["_permission", "_skill_loading", "_task_system", "_workflow_runtime"]],
+  ["ExplainBack", ["_agent_loop", "_skill_loading", "_memory", "_goal_loop"]],
   ["Learning Supervision and Planning Assistant", ["_todo_write", "_skill_loading", "_memory", "_task_system", "_goal_loop"]],
-  ["MeetingMemo", ["_permission", "_subagent", "_skill_loading", "_background_tasks", "_workflow_runtime"]],
+  ["MeetingMemo", ["_permission", "_skill_loading", "_background_tasks", "_workflow_runtime"]],
   ["ShipCheck", ["_agent_loop", "_tool_use", "_permission", "_background_tasks", "_workflow_runtime"]],
   ["灵感星图", ["_skill_loading", "_memory", "_workflow_runtime"]]
 ]);
@@ -111,11 +110,11 @@ stack: ["_agent_loop", "_memory", "_workflow_runtime"]
 ```
 
 ```js
-stack: ["_permission", "_subagent", "_skill_loading", "_task_system", "_workflow_runtime"]
+stack: ["_permission", "_skill_loading", "_task_system", "_workflow_runtime"]
 ```
 
 ```js
-stack: ["_agent_loop", "_subagent", "_skill_loading", "_memory", "_goal_loop"]
+stack: ["_agent_loop", "_skill_loading", "_memory", "_goal_loop"]
 ```
 
 ```js
@@ -123,7 +122,7 @@ stack: ["_todo_write", "_skill_loading", "_memory", "_task_system", "_goal_loop"
 ```
 
 ```js
-stack: ["_permission", "_subagent", "_skill_loading", "_background_tasks", "_workflow_runtime"]
+stack: ["_permission", "_skill_loading", "_background_tasks", "_workflow_runtime"]
 ```
 
 ```js
@@ -180,7 +179,7 @@ python3 -m http.server 4173
 ```js
 await expect(page.locator("#projectsList .card")).toHaveCount(7);
 await expect(page.locator("#projectsList .card__stack")).toHaveCount(7);
-await expect(page.locator("#projectsList .card__stack span")).toHaveCount(31);
+await expect(page.locator("#projectsList .card__stack span")).toHaveCount(28);
 await expect(page.locator("#projectsList .card__arrow")).toHaveCount(6);
 await expect(page.locator('#projectsList a[target="_blank"][rel="noopener noreferrer"]')).toHaveCount(6);
 ```
@@ -193,7 +192,7 @@ await expect(page.locator('#projectsList a[target="_blank"][rel="noopener norefe
 
 - 项目卡片保持单列；
 - 每张卡片的标签在卡片内部自动换行；
-- 31 个标签全部可见且没有水平溢出；
+- 28 个标签全部可见且没有水平溢出；
 - 6 个「去查看 →」仍位于各自链接卡片内。
 
 - [ ] **步骤 3：执行最终验证**
